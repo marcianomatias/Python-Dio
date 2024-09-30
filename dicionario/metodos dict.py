@@ -22,5 +22,16 @@ dict.fromkeys(["nome", "telefone"])
 print(dict.fromkeys(["nome", "telefone"]))
 dict.fromkeys(["nome", "telefone"], "vazio")
 print(dict.fromkeys(["nome", "telefone"],"vazio"))
+print("="*100)
+print("metodo get")
+contatos = {
+    "mms@mail.com": {"nome": "Marciano", "telefone": "3333-1234"},
+}
+#contatos["chave"] KeyError
+print(contatos.get("chave"))
+print(contatos.get("chave", {}))
+print(contatos.get("mms@mail.com", {}))
+print("="*100)
+print("metodo items")
 
 
