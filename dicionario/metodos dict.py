@@ -33,5 +33,38 @@ print(contatos.get("chave", {}))
 print(contatos.get("mms@mail.com", {}))
 print("="*100)
 print("metodo items")
+print(contatos.items())
+print("="*100)
+print("metodo Keys")
+print(contatos.keys())
+print("="*100)
+print("metodo pop")
+print(contatos.pop("mms@mail.com"))
+print(contatos.pop("mms@mail.com", "Não encontrado!"))
+print(contatos.pop("mms@mail.com",{}))
+print("="*100)
+print("metodo popitem")
+contatos = {
+    "mms@mail.com": {"nome": "Marciano", "telefone": "3333-1234"},
+}
+print(contatos.popitem())
+print("="*100)
+
+print("metodo setdefault")
+contato = {"nome": "Marciano", "telefone": "3333-1234"},
+#contato.setdefault("nome", "Marciano")
+print(contato)
+#contato.setdefault("idade", 18)
+#print(contato)
+print("="*100)
+print("metodo update")
+contatos = {
+    "mms@mail.com": {"nome": "Marciano", "telefone": "3333-1234"},
+}
+contatos.update({"mms@mail.com", {"nome": "marte"}})
+print(contatos)
+print("="*100)
+
+
 
 
