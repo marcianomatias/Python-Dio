@@ -13,3 +13,7 @@ print("objeto time")
 hora = time(10, 20, 0)
 print(hora)
 print("="*100)
+
+
+def time():
+    return None
