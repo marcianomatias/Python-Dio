@@ -1,0 +1,175 @@
+import textwrap
+
+
+class Usuario:
+    def __init__(self, nome, data_nascimento, cpf, endereco):
+        self.nome = nome
+        self.data_nascimento = data_nascimento
+        self.cpf = cpf
+        self.endereco = endereco
+
+    def __repr__(self):
+        return f"{self.nome} ({self.cpf})"
+
+
+class Conta:
+    def __init__(self, agencia, numero, usuario):
+        self.agencia = agencia
+        self.numero = numero
+        self.usuario = usuario
+        self.saldo = 0.0
+        self.extrato = ""
+        self.limite = 500
+        self.numero_saques = 0
+        self.LIMITE_SAQUES = 3
+
+    def depositar(self, valor):
+        if valor > 0:
+            self.saldo += valor
+            self.extrato += f"Depósito:\tR$ {valor:.2f}\n"
+            print("\n✅ Depósito realizado com sucesso!")
+        else:
+            print("\n❌ Valor inválido para depósito.")
+
+    def sacar(self, valor):
+        if valor <= 0:
+            print("\n❌ Valor inválido para saque.")
+        elif valor > self.saldo:
+            print("\n❌ Saldo insuficiente.")
+        elif valor > self.limite:
+            print("\n❌ Limite de saque excedido.")
+        elif self.numero_saques >= self.LIMITE_SAQUES:
+            print("\n❌ Limite de saques diários excedido.")
+        else:
+            self.saldo -= valor
+            self.extrato += f"Saque:\t\tR$ {valor:.2f}\n"
+            self.numero_saques += 1
+            print("\n✅ Saque realizado com sucesso!")
+
+    def mostrar_extrato(self):
+        print("\n=========== EXTRATO ===========")
+        print(self.extrato if self.extrato else "Nenhuma movimentação.")
+        print(f"\nSaldo:\t\tR$ {self.saldo:.2f}")
+        print("=" * 30)
+
+
+class Banco:
+    def __init__(self):
+        self.usuarios = []
+        self.contas = []
+        self.agencia_padrao = "0001"
+
+    def menu(self):
+        opcoes = """\n
+        ========== MENU ==========
+        [d] Depositar
+        [s] Sacar
+        [e] Extrato
+        [nu] Novo usuário
+        [nc] Nova conta
+        [lc] Listar contas
+        [q] Sair
+        => """
+        return input(textwrap.dedent(opcoes))
+
+    def criar_usuario(self):
+        cpf = input("CPF (apenas números): ").strip()
+        if self.buscar_usuario(cpf):
+            print("\n❌ Usuário já cadastrado!")
+            return
+
+        nome = input("Nome completo: ").strip()
+        data_nasc = input("Data de nascimento (dd-mm-aaaa): ").strip()
+        endereco = input("Endereço (logradouro, nº - bairro - cidade/UF): ").strip()
+        novo_usuario = Usuario(nome, data_nasc, cpf, endereco)
+        self.usuarios.append(novo_usuario)
+        print("\n✅ Usuário criado com sucesso!")
+
+    def criar_conta(self):
+        cpf = input("CPF do usuário: ").strip()
+        usuario = self.buscar_usuario(cpf)
+        if not usuario:
+            print("\n❌ Usuário não encontrado.")
+            return
+
+        numero = len(self.contas) + 1
+        nova_conta = Conta(self.agencia_padrao, numero, usuario)
+        self.contas.append(nova_conta)
+        print("\n✅ Conta criada com sucesso!")
+
+    def buscar_usuario(self, cpf):
+        return next((u for u in self.usuarios if u.cpf == cpf), None)
+
+    def listar_contas(self):
+        if not self.contas:
+            print("\n⚠️ Nenhuma conta cadastrada.")
+            return
+        for conta in self.contas:
+            print("=" * 30)
+            print(f"Agência:\t{conta.agencia}")
+            print(f"Conta:\t\t{conta.numero}")
+            print(f"Titular:\t{conta.usuario.nome}")
+
+    def executar(self):
+        while True:
+            opcao = self.menu()
+
+            if opcao == "d":
+                self.operacao_deposito()
+            elif opcao == "s":
+                self.operacao_saque()
+            elif opcao == "e":
+                self.operacao_extrato()
+            elif opcao == "nu":
+                self.criar_usuario()
+            elif opcao == "nc":
+                self.criar_conta()
+            elif opcao == "lc":
+                self.listar_contas()
+            elif opcao == "q":
+                print("👋 Saindo... Obrigado por usar nosso banco!")
+                break
+            else:
+                print("❌ Opção inválida. Tente novamente.")
+
+    def selecionar_conta(self):
+        if not self.contas:
+            print("\n⚠️ Nenhuma conta disponível.")
+            return None
+        try:
+            numero = int(input("Informe o número da conta: "))
+            conta = next((c for c in self.contas if c.numero == numero), None)
+            if not conta:
+                print("❌ Conta não encontrada.")
+            return conta
+        except ValueError:
+            print("❌ Entrada inválida.")
+            return None
+
+    def operacao_deposito(self):
+        conta = self.selecionar_conta()
+        if conta:
+            try:
+                valor = float(input("Valor do depósito: "))
+                conta.depositar(valor)
+            except ValueError:
+                print("❌ Valor inválido.")
+
+    def operacao_saque(self):
+        conta = self.selecionar_conta()
+        if conta:
+            try:
+                valor = float(input("Valor do saque: "))
+                conta.sacar(valor)
+            except ValueError:
+                print("❌ Valor inválido.")
+
+    def operacao_extrato(self):
+        conta = self.selecionar_conta()
+        if conta:
+            conta.mostrar_extrato()
+
+
+if __name__ == "__main__":
+    banco = Banco()
+    banco.executar()
